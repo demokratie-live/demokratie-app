@@ -8,13 +8,13 @@ import {
 } from "@democracy-deutschland/democracy-common";
 import { DB_URL, ENTRY_PERSIST_MILLISECONDS } from "./config";
 
-/*
+  /*
   This service cleanes up the democrac.pushnotifications collection:
   removes:
   - sent: true
   - updatedAt: lt: 7d
   - cagegory: CONFERENCE_WEEK | CONFERENCE_WEEK_VOTE | OUTCOME
-*/
+  */
 
 const cleanupPushQueue = async () => {
   // if ENTRY_PERSIST_MILLISECONDS is set, entries will persist
