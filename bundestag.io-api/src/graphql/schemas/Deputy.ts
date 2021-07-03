@@ -35,13 +35,13 @@ type DeputyUpdate {
   beforeCount: Int!
   afterCount: Int!
   newCount: Int
-  changedCount: Int
+  changedCount: Int @deprecated
   deputies: [Deputy]
 }
 
 type Query {
   deputy(webId: String!): Deputy
   deputies(limit: Int, offset: Int): [Deputy]
-  deputyUpdates(since: Date!, limit: Int, offset: Int): DeputyUpdate
+  deputyUpdates(since: Date, limit: Int, offset: Int): DeputyUpdate
 }
 `;

@@ -6,7 +6,6 @@ export default gql`
       beforeCount
       afterCount
       newCount
-      changedCount
       deputies {
         webId
         imgURL
