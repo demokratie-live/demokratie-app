@@ -22,6 +22,28 @@ services:
       - ./configuration/gorush-config.yaml:/config.yml
   redis:
     image: "redis:alpine"
+  zero:
+    image: dgraph/dgraph:latest
+    ports:
+      - 5080:5080
+      - 6080:6080
+    volumes:
+      - democracy-dgraph:/dgraph
+    command: dgraph zero --my=zero:5080
+  alpha:
+    image: dgraph/dgraph:latest
+    ports:
+      - 8080:8080
+      - 9080:9080
+    volumes:
+      - democracy-dgraph:/dgraph
+    command: dgraph alpha --my=alpha:7080 --zero=zero:5080 --security "whitelist=0.0.0.0/0;"
+  ratel:
+    image: dgraph/ratel:latest
+    ports:
+      - 8000:8000
+    command: dgraph-ratel
 
 volumes:
   democracy-mongodb:
+  democracy-dgraph:

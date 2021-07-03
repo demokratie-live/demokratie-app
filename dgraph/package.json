@@ -1,0 +1,10 @@
+{
+  "name": "democracy-dgraph",
+  "version": "0.0.1",
+  "main": "index.js",
+  "author": "Manuel Ruck <m.ruck@democracy-deutschland.de>",
+  "license": "Apache2.0",
+  "scripts": {
+    "save:schema": "curl -X POST localhost:8080/admin/schema --data-binary '@schema.graphql'"
+  }
+}

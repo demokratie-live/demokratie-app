@@ -1,0 +1,20 @@
+type Deputy {
+  xid: String! @id
+  lastname: String!
+  firstname: String!
+  title: String!
+  period: Int
+  baseDate: DateTime
+  date: DateTime
+  nameSuffix: String
+}
+
+type Role {
+  function: String!
+  party: Party
+  periods: [Int!]
+}
+
+type Party {
+  name: String! @id
+}
