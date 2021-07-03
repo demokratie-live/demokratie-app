@@ -1,5 +1,5 @@
 import mongoConnect from "./mongoose";
-import { CRON_SEND_QUED_PUSHS_LIMIT } from "./utils/config";
+import { CRON_SEND_QUED_PUSHS_LIMIT } from "./config";
 import {
   DeviceModel,
   PUSH_CATEGORY,

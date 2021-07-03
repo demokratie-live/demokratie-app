@@ -1,10 +1,10 @@
 {
   "name": "cleanup-push-queue",
-  "version": "0.0.1-cleanup.push-alpha.0",
+  "version": "1.0.1",
   "main": "build/index.js",
   "license": "Apache-2.0",
   "scripts": {
-    "dev": "ts-node-dev -r dotenv/config ./src/index",
+    "dev": "ts-node-dev -r dotenv/config ./src/index dotenv_config_path=./.env.local",
     "lint": "yarn lint:ts && yarn lint:exports",
     "lint:ts": "tsc --noEmit",
     "lint:exports": "ts-unused-exports ./tsconfig.json --excludePathsFromReport=generated --excludePathsFromReport=resolvers --excludePathsFromReport=/schemas",

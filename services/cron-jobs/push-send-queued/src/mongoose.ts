@@ -1,5 +1,5 @@
 import { mongoose } from "@democracy-deutschland/democracy-common";
-import { DB_URL } from "./utils/config";
+import { DB_URL } from "./config";
 
 export default () =>
   new Promise(async (resolve) => {

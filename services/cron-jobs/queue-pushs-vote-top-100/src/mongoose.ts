@@ -1,8 +1,8 @@
 import { mongoose } from "@democracy-deutschland/democracy-common";
-import { DB_URL } from "./utils/config";
+import { DB_URL } from "./config";
 
 export default () =>
-  new Promise<void>(async (resolve, reject) => {
+  new Promise<void>(async (resolve) => {
     mongoose.set("useFindAndModify", false);
     // Mongo Debug
     mongoose.set("debug", false);
