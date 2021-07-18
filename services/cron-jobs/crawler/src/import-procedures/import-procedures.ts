@@ -1,32 +1,22 @@
-import { mongoConnect, mongoDisconnect } from "./mongoose";
-import config from "./config";
-import { request, gql } from "graphql-request";
-import { ProcedureModel } from "@democracy-deutschland/bundestagio-common";
-import debug from "debug";
-const [log, error] = [
-  debug("bundestag-io:import-procedures:log"),
-  debug("bundestag-io:import-procedures:error"),
-];
+import { gql, request } from 'graphql-request';
+import { ProcedureModel } from '@democracy-deutschland/bundestagio-common';
+import debug from 'debug';
+const log = debug('bundestag-io:import-procedures:log');
 log.log = console.log.bind(console);
 
-const {
-  DIP_GRAPHQL_ENDPOINT,
-  IMPORT_PROCEDURES_START_CURSOR,
-  IMPORT_PROCEDURES_CHUNK_SIZE,
-  IMPORT_PROCEDURES_CHUNK_ROUNDS,
-  IMPORT_PROCEDURES_FILTER_BEFORE,
-  IMPORT_PROCEDURES_FILTER_AFTER,
-  IMPORT_PROCEDURES_FILTER_TYPES,
-} = config;
+export type ImportProceduresInput = {
+  DIP_GRAPHQL_ENDPOINT: string;
+  IMPORT_PROCEDURES_START_CURSOR: string;
+  IMPORT_PROCEDURES_CHUNK_SIZE: number;
+  IMPORT_PROCEDURES_CHUNK_ROUNDS: number;
+  IMPORT_PROCEDURES_FILTER_BEFORE: string;
+  IMPORT_PROCEDURES_FILTER_AFTER: string;
+  IMPORT_PROCEDURES_FILTER_TYPES: string[] | undefined;
+};
 
 const procedureQuery = gql`
   query ($cursor: String, $offset: Int, $limit: Int, $filter: ProcedureFilter) {
-    procedures(
-      cursor: $cursor
-      offset: $offset
-      limit: $limit
-      filter: $filter
-    ) {
+    procedures(cursor: $cursor, offset: $offset, limit: $limit, filter: $filter) {
       edges {
         node {
           abstract
@@ -78,15 +68,25 @@ const procedureQuery = gql`
   }
 `;
 
-export default async function importProcedures() {
+export default async function importProcedures(config: ImportProceduresInput): Promise<void> {
+  const {
+    DIP_GRAPHQL_ENDPOINT,
+    IMPORT_PROCEDURES_START_CURSOR,
+    IMPORT_PROCEDURES_CHUNK_SIZE,
+    IMPORT_PROCEDURES_CHUNK_ROUNDS,
+    IMPORT_PROCEDURES_FILTER_BEFORE,
+    IMPORT_PROCEDURES_FILTER_AFTER,
+    IMPORT_PROCEDURES_FILTER_TYPES,
+  } = config;
+
   const variables = {
+    cursor: IMPORT_PROCEDURES_START_CURSOR,
     filter: {
       after: IMPORT_PROCEDURES_FILTER_AFTER,
       before: IMPORT_PROCEDURES_FILTER_BEFORE,
       types: IMPORT_PROCEDURES_FILTER_TYPES,
     },
     limit: IMPORT_PROCEDURES_CHUNK_SIZE,
-    cursor: IMPORT_PROCEDURES_START_CURSOR,
   };
   log(`
       --------------------------------------
@@ -94,14 +94,12 @@ export default async function importProcedures() {
       Between ${variables.filter.after} and ${variables.filter.before}.
       Filter: ${
         variables.filter.types && variables.filter.types.length > 0
-          ? `[types: ${variables.filter.types.join(", ")}]`
-          : "none"
+          ? `[types: ${variables.filter.types.join(', ')}]`
+          : 'none'
       }
       --------------------------------------
   `);
-  for (const round of Array.from(
-    Array(IMPORT_PROCEDURES_CHUNK_ROUNDS).keys()
-  )) {
+  for (const round of Array.from(Array(IMPORT_PROCEDURES_CHUNK_ROUNDS).keys())) {
     log(`Round ${round} - Cursor ${variables.cursor}`);
     const {
       procedures: {
@@ -117,21 +115,11 @@ export default async function importProcedures() {
           update: edge.node,
           upsert: true,
         },
-      }))
+      })),
     );
-    if (!hasNextPage) break;
+    if (!hasNextPage) {
+      break;
+    }
     variables.cursor = endCursor;
   }
 }
-
-(async () => {
-  try {
-    await mongoConnect();
-    await importProcedures();
-  } catch (err) {
-    error(err);
-    throw err;
-  } finally {
-    mongoDisconnect();
-  }
-})();
